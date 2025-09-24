@@ -56,13 +56,13 @@ This platform demonstrates comprehensive full-stack development skills including
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd conflict-data-platform
+   git clone global-conflict-data-platform
+   cd global-conflict-data-platform
    ```
 
 2. **Start the application**
    ```bash
-   docker-compose up --build
+   docker-compose up --build 
    ```
 
 3. **Initialize the database** (in a new terminal)
@@ -76,30 +76,11 @@ This platform demonstrates comprehensive full-stack development skills including
    - Backend API: http://localhost:3001
    - API Documentation: http://localhost:3001/api/docs
 
-### Option 2: Local Development
+### Option 2: Run via script
 
-1. **Clone and setup backend**
    ```bash
-   cd backend
-   npm install
-   cp .env.example .env  # Configure your database URL
-   npm run prisma:migrate
-   npm run seed
-   npm run dev
+      ./start.sh #sudo ./start.sh
    ```
-
-2. **Setup frontend** (in a new terminal)
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-
-3. **Setup PostgreSQL**
-   - Install PostgreSQL locally
-   - Create database `conflict_data`
-   - Update connection string in `backend/.env`
-
 ## Demo Accounts
 
 The application comes with pre-configured demo accounts:
@@ -166,31 +147,6 @@ Authorization: Bearer <jwt-token>
 │   └── Dockerfile          # Frontend container configuration
 └── docker-compose.yml      # Multi-service orchestration
 ```
-
-## Features Deep Dive
-
-### Data Visualization
-- **Real-time Dashboard** with key metrics and trends
-- **Interactive Charts** showing conflicts by region, event type, and time
-- **Geographic Mapping** with conflict location visualization
-- **Statistical Analysis** with aggregated data views
-
-### Security Features
-- **JWT Authentication** with secure token handling
-- **Password Hashing** using bcrypt
-- **Input Validation** with Joi schemas
-- **Rate Limiting** to prevent abuse
-- **CORS Configuration** for cross-origin requests
-- **SQL Injection Prevention** through Prisma ORM
-- **XSS Protection** with proper data sanitization
-
-### Performance Optimizations
-- **Database Indexing** on frequently queried fields
-- **Query Optimization** with Prisma
-- **Caching Headers** for static assets
-- **Compressed API responses**
-- **Lazy Loading** for charts and maps
-- **Pagination** for large datasets
 
 ## Development Commands
 
