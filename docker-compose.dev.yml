@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: conflict-postgres-dev
+    environment:
+      POSTGRES_DB: conflict_data
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - conflict-dev-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: conflict-backend-dev
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://admin:password@postgres:5432/conflict_data?schema=public
+      JWT_SECRET: dev-jwt-secret-key
+      NODE_ENV: development
+      PORT: 3001
+      CORS_ORIGIN: http://localhost:3000
+    depends_on:
+      - postgres
+    networks:
+      - conflict-dev-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./backend/logs:/app/logs
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: conflict-frontend-dev
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    depends_on:
+      - backend
+    networks:
+      - conflict-dev-network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+
+volumes:
+  postgres_dev_data:
+
+networks:
+  conflict-dev-network:
+    driver: bridge

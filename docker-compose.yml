@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: conflict-postgres
+    environment:
+      POSTGRES_DB: conflict_data
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - conflict-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d conflict_data"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: conflict-backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://admin:password@postgres:5432/conflict_data?schema=public
+      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production-environment
+      NODE_ENV: production
+      PORT: 3001
+      CORS_ORIGIN: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - conflict-network
+    volumes:
+      - ./backend/logs:/app/logs
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: conflict-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    depends_on:
+      - backend
+    networks:
+      - conflict-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  conflict-network:
+    driver: bridge
